@@ -2,6 +2,7 @@ from pragmatic.controller import PragmaticController
 import asyncio
 import os
 from dotenv import load_dotenv
+import websocket
 
 load_dotenv()
 SESSIONID = os.getenv('SESSIONID')
@@ -12,7 +13,7 @@ SESSIONID = os.getenv('SESSIONID')
 #: <card> = describes dealt cards
 
 
-async def handler(data: dict):
+async def handler(game: PragmaticController, data: dict):
     print(data)
 
 

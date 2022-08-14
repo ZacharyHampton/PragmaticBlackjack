@@ -24,7 +24,7 @@ class PragmaticController:
                     if "duplicated_connection" in data:
                         raise pragmatic.exceptions.PragmaticDuplicateSession("Two sessions are active.")
 
-                    await self.handler(xmltodict.parse(data))
+                    await self.handler(self, xmltodict.parse(data))
 
     async def _ping(self):
         while self.ws.connected:
