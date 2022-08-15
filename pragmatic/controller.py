@@ -4,6 +4,8 @@ import asyncio
 import xmltodict
 import pragmatic.exceptions
 
+websocket.enableTrace(True)
+
 
 class PragmaticController:
     def __init__(self, sessionId: str, tableId: str, handler=None):
@@ -15,7 +17,13 @@ class PragmaticController:
 
     async def _handle_data(self):
         while self.ws.connected:
-            data = self.ws.recv()
+            try:
+                data = self.ws.recv()
+            except websocket.WebSocketConnectionClosedException:
+                print('Disconnected, reconnecting...')
+                await self.connect(reconnect=True)
+                return await self._handle_data()
+
             if self.handler:
                 if data:
                     if data == "Connection Exception":
@@ -27,13 +35,28 @@ class PragmaticController:
                     await self.handler(self, xmltodict.parse(data))
 
     async def _ping(self):
-        while self.ws.connected:
-            time.sleep(10)
-            self.ws.send('<ping time={}></ping>'.format(int(time.time())))
+        while True:
+            while self.ws.connected:
+                time.sleep(10)
+                self.ws.send('<ping time={}></ping>'.format(int(time.time())))
 
-    async def connect(self):
-        self.ws.connect('wss://gs7.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}'.format(self.sessionId, self.tableId), origin='https://client.pragmaticplaylive.net')
+    async def connect(self, reconnect=False):
+        if reconnect is False:
+            self.ws.connect(
+                'wss://gs7.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}'.format(self.sessionId, self.tableId),
+                origin='https://client.pragmaticplaylive.net')
 
-        self._event_loop.create_task(self._handle_data())
-        self._event_loop.create_task(self._ping())
-        self._event_loop.run_forever()
+            if self.ws.connected:
+                print('Connected.')
+
+            self._event_loop.create_task(self._handle_data())
+            self._event_loop.create_task(self._ping())
+            self._event_loop.run_forever()
+        else:
+            self.ws.connect(
+                'wss://gs7.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}&reconnect=true'.format(self.sessionId,
+                                                                                                      self.tableId),
+                origin='https://client.pragmaticplaylive.net')
+
+        if self.ws.connected:
+            print('Connected.')
