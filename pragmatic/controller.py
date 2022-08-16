@@ -16,9 +16,13 @@ class PragmaticActions:
         self.tableId = tableId
 
     def sitDown(self, seatNumber: int):
-        return self.ws.send(
-            "<command channel='table-{}' > <sitdown gameMode='blackjack' seatNum='{}'></sitdown></command>".format(
-                self.tableId, seatNumber))
+        # return self.ws.send(
+        #             "<command channel='table-{}'> <sitdown gameMode='blackjack' seatNum='{}'></sitdown></command>".format(
+        #                 self.tableId, seatNumber))
+        pass
+
+    def placeBet(self):
+        pass
 
 
 class PragmaticController:
