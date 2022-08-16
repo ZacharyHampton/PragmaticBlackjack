@@ -47,6 +47,8 @@ def basic_strategy(player_val, dealer_val, soft):
             return 'double'
         return 'hit'
     if player_val == 11:
+        if dealer_val in [1, 10]:
+            return 'hit'
         return 'double'
 
     else:
