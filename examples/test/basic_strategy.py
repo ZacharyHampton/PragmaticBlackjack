@@ -1,4 +1,39 @@
-def basic_strategy(player_val, dealer_val, soft):
+def basic_strategy(player_val: int, dealer_val: int, soft: bool, pair: bool):
+    if pair:
+        if player_val == 20:
+            return 'stand'
+        if player_val == 16 or soft:
+            return 'split'
+        if player_val == 18:
+            if dealer_val in [1, 7, 10]:
+                return 'stand'
+            return 'split'
+        if player_val == 14:
+            if dealer_val in [1, 8, 9]:
+                return 'hit'
+            elif dealer_val == 10:
+                return 'stand'
+            return 'split'
+        if player_val == 12:
+            if dealer_val >= 7:
+                return 'hit'
+            return 'split'
+        if player_val == 10:
+            if dealer_val <= 9:
+                return 'double'
+            return 'hit'
+        if player_val == 8:
+            if dealer_val not in [5, 6]:
+                return 'hit'
+            return 'double'
+        if player_val == 6:
+            if dealer_val not in [4, 5, 6, 7]:
+                return 'hit'
+            return 'split'
+        if player_val == 4:
+            if dealer_val in [3, 4, 5, 6, 7]:
+                return 'split'
+            return 'hit'
     if soft:
         if player_val == 9:
             return 'stand'
@@ -62,6 +97,3 @@ def basic_strategy(player_val, dealer_val, soft):
             return 'hit'
         if player_val >= 17:
             return 'stand'
-
-
-print(basic_strategy(13, 7, False))
