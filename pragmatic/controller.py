@@ -13,7 +13,7 @@ class PragmaticController:
         self._handler = handler
         self._ws: websocket.WebSocket = websocket.WebSocket()
         self._event_loop = asyncio.get_event_loop()
-        self.actions = PragmaticActions(self._ws, self.tableId)
+        self.actions = PragmaticActions(self._ws, self.tableId, self._sessionId)
 
     async def _handle_data(self):
         while self._ws.connected:
