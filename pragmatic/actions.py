@@ -136,3 +136,37 @@ class PragmaticActions:
 
         # todo: check response
         return Response(success=True)
+
+    def double_down(self, seatNumber: int, gameId: int, isPreDecision: bool) -> Response:
+        params = self._get_base_params()
+
+        response = requests.post(self._getDecisionUrl(isPreDecision=isPreDecision), params=params,
+                                 headers=self.headers,
+                                 json={
+                                     "tableId": self.tableId,
+                                     "gameId": gameId,
+                                     "seat": seatNumber,
+                                     "dec": "double",
+                                     "ck": int(self.getTimeString()),
+                                     "gameMode": "blackjack_desktop"
+                                 })
+
+        # todo: check response
+        return Response(success=True)
+
+    def split(self, seatNumber: int, gameId: int, isPreDecision: bool) -> Response:
+        params = self._get_base_params()
+
+        response = requests.post(self._getDecisionUrl(isPreDecision=isPreDecision), params=params,
+                                 headers=self.headers,
+                                 json={
+                                     "tableId": self.tableId,
+                                     "gameId": gameId,
+                                     "seat": seatNumber,
+                                     "dec": "split",
+                                     "ck": int(self.getTimeString()),
+                                     "gameMode": "blackjack_desktop"
+                                 })
+
+        # todo: check response
+        return Response(success=True)
