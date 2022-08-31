@@ -3,7 +3,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import halves
-from classes import Table, Player
+from classes import Table, Player, Hand
 
 load_dotenv()
 SESSIONID = os.getenv('SESSIONID')
@@ -26,16 +26,38 @@ async def handler(game: PragmaticController, data: dict):
     if not AllowGame:
         pass
 
+    if data.get('dealer'):
+        print(data)  #: debug line
+
     if data.get('seat'):
-        if data['seat']['event'] == "sit":
-            GameTable.players[int(data['seat']['num'])] = Player(
-                username=data['seat']['screen_name'],
+        if data['seat']['@event'] == "sit":
+            GameTable.players[int(data['seat']['@num'])] = Player(
+                username=data['seat']['@screen_name'],
                 isMe=False,
                 bet=0.00,
-                currentHand=None
+                currentHand=Hand(
+                    currentHandValue=0,
+                    isSoft=False,
+                    isPair=False,
+                )
             )
-        elif data['seat']['event'] == "stand":
-            del GameTable.players[int(data['seat']['num'])]
+        elif data['seat']['@event'] == "stand":
+            del GameTable.players[int(data['seat']['@num'])]
+
+    if data.get('card'):
+        soft = False
+        score = 0
+
+        if "/" in data['card']['@score']:
+            soft = True
+            score = int(data['card']['@score'].split('/')[0])
+
+        hand = GameTable.players[int(data['card']['@seat'])].currentHand
+        hand.isSoft = soft
+        hand.currentHandValue = score
+
+
+
 
 
 async def main():

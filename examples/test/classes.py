@@ -13,10 +13,10 @@ class Player:
     username: str
     isMe: bool
     bet: float
-    currentHand: Hand | None = None
+    currentHand: Hand
 
 
 @dataclass
 class Table:
-    players: dict[int][Player] | None = None
+    players: dict[int, Player] | None = None
     dealer: Player | None = None
