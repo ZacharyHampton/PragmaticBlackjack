@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import halves
 from classes import Table, Player, Hand
+from basic_strategy import basic_strategy
 
 load_dotenv()
 SESSIONID = os.getenv('SESSIONID')
@@ -41,6 +42,10 @@ async def handler(game: PragmaticController, data: dict):
                     isPair=False,
                 )
             )
+
+            if int(data['seat']['@num']) == SeatNumber:
+                GameTable.players[int(data['seat']['@num'])].isMe = True
+
         elif data['seat']['@event'] == "stand":
             del GameTable.players[int(data['seat']['@num'])]
 
@@ -50,14 +55,32 @@ async def handler(game: PragmaticController, data: dict):
 
         if "/" in data['card']['@score']:
             soft = True
-            score = int(data['card']['@score'].split('/')[0])
+            score = int(data['card']['@score'].split('/')[1])
 
         hand = GameTable.players[int(data['card']['@seat'])].currentHand
         hand.isSoft = soft
         hand.currentHandValue = score
+        GameTable.players[int(data['card']['@seat'])].currentHand = hand
 
+    if data.get('pre_decisioninc') or data.get('decisioninc'):
+        prefix = 'pre_decisioninc' if data.get('pre_decisioninc') else 'decisioninc'
+        is_pre_decision = prefix == 'pre_decisioninc'
 
-
+        if SeatNumber == int(data['pre_decisioninc']['@seat']):
+            decision = basic_strategy(player_val=GameTable.players[SeatNumber].currentHand.currentHandValue,
+                                      dealer_val=GameTable.dealer.currentHand.currentHandValue,
+                                      soft=GameTable.players[SeatNumber].currentHand.isSoft,
+                                      pair=data[prefix]['@cansplit'] != "false"
+                                      )
+            match decision:
+                case "stand":
+                    game.actions.stand(seatNumber=SeatNumber, gameId=0, isPreDecision=is_pre_decision)
+                case "hit":
+                    game.actions.hit(seatNumber=SeatNumber, gameId=0, isPreDecision=is_pre_decision)
+                case "double":
+                    game.actions.double_down(seatNumber=SeatNumber, gameId=0, isPreDecision=is_pre_decision)
+                case "split":
+                    game.actions.split(seatNumber=SeatNumber, gameId=0, isPreDecision=is_pre_decision)
 
 
 async def main():
