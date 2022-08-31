@@ -3,7 +3,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import halves
-from classes import Table
+from classes import Table, Player
 
 load_dotenv()
 SESSIONID = os.getenv('SESSIONID')
@@ -26,6 +26,16 @@ async def handler(game: PragmaticController, data: dict):
     if not AllowGame:
         pass
 
+    if data.get('seat'):
+        if data['seat']['event'] == "sit":
+            GameTable.players[int(data['seat']['num'])] = Player(
+                username=data['seat']['screen_name'],
+                isMe=False,
+                bet=0.00,
+                currentHand=None
+            )
+        elif data['seat']['event'] == "stand":
+            del GameTable.players[int(data['seat']['num'])]
 
 
 async def main():
