@@ -52,7 +52,7 @@ async def handler(game: PragmaticController, data: dict):
     if data.get('card'):
         soft = False
         score = 0
-
+        CardCounter.add_card(data['card']['@sc'][0])
         if "/" in data['card']['@score']:
             soft = True
             score = int(data['card']['@score'].split('/')[1])
