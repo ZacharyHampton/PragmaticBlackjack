@@ -53,6 +53,7 @@ async def handler(game: PragmaticController, data: dict):
         soft = False
         score = 0
         CardCounter.add_card(data['card']['@sc'][0])
+
         if "/" in data['card']['@score']:
             soft = True
             score = int(data['card']['@score'].split('/')[1])
@@ -81,6 +82,11 @@ async def handler(game: PragmaticController, data: dict):
                     game.actions.double_down(seatNumber=SeatNumber, gameId=0, isPreDecision=is_pre_decision)
                 case "split":
                     game.actions.split(seatNumber=SeatNumber, gameId=0, isPreDecision=is_pre_decision)
+
+    if data.get('betsopen'):
+        bet = CardCounter.get_bet()
+        if bet >= 5:
+            game.actions.placeBet(seatNumber=SeatNumber, gameId=0, betAmount=bet)
 
 
 async def main():
