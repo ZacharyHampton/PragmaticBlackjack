@@ -52,7 +52,10 @@ async def handler(game: PragmaticController, data: dict):
     if data.get('card'):
         soft = False
         score = 0
-        CardCounter.add_card(data['card']['@sc'][0])
+        if len(data['card']['@sc']) == 4:  # len will only be 4 if the card is a 10
+            CardCounter.add_card("10")
+        else:
+            CardCounter.add_card(data['card']['@sc'][0])
 
         if "/" in data['card']['@score']:
             soft = True
