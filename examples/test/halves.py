@@ -2,15 +2,23 @@ class GameState:
     """
     Tracks the state of a blackjack game.
     """
-    def __init__(self, decks: int, bank_roll: float):
+    def __init__(self, decks: int, bank_roll: float, risk=1):
         """
         Initializes the game state.
 
         :param decks: The number of decks currently in the shoe.
         :param bank_roll: Total amount of money that you are willing to bet.
+        :param risk: An integer, by default 1 with a max of 3, that will determine how large your bet unit is
+        (1%, 2%, 3%)
         """
+        if risk <= 1:
+            self.risk = 1
+        elif 1 < risk <= 2:
+            self.risk = 2
+        else:
+            self.risk = 3
         self.bank_roll = bank_roll
-        self.bet_unit = bank_roll * .01
+        self.bet_unit = bank_roll * risk/100
         self.decks = decks
         self.running_count = 0
         self.true_count = 0
@@ -20,7 +28,7 @@ class GameState:
         # Keeps track of the number of cards taken out of the shoe so the deck estimate can be updated as
         # cards are counted
         self.card_count = 0
-        self.shoe_size = 8
+        self.shoe_size = 7
 
     def get_bet(self) -> float:
         if self.true_count <= 0:

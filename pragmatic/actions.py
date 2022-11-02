@@ -16,8 +16,7 @@ class Response:
 
 
 class PragmaticActions:
-    def __init__(self, ws: websocket.WebSocket, tableId: str, sessionId: str):
-        self._ws = ws
+    def __init__(self, tableId: str, sessionId: str):
         self.tableId = tableId
         self._sessionId = sessionId
         self.headers = {
