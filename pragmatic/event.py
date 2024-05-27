@@ -6,8 +6,8 @@ import re
 @dataclass
 class Event:
     @staticmethod
-    def _xml_to_json(data: str) -> dict:
-        return xmltodict.parse(data)
+    def _xml_to_json(data: str, non_root: bool = True) -> dict:
+        return list(xmltodict.parse(data).values())[0] if non_root else xmltodict.parse(data)
 
     @classmethod
     def from_raw(cls, data: str) -> "Event": ...
@@ -27,7 +27,6 @@ class TableEvent(Event):
     @classmethod
     def from_raw(cls, data: str) -> "TableEvent":
         data = cls._xml_to_json(data)
-        data = data["table"]
 
         return cls(
             new_table=data["@newTable"] == "true",
@@ -288,7 +287,6 @@ class Dealer(Event):
     @classmethod
     def from_raw(cls, data: str) -> "Dealer":
         data = cls._xml_to_json(data)
-        data = data["dealer"]
 
         return cls(
             id=data["@id"],
@@ -886,14 +884,22 @@ _mapping = {
 }
 
 
-def _get_event(message: str) -> Event:
+def _get_event_name(message: str) -> str:
     if event_name := re.findall(r"<(.*?) ", message):
-        event_type = event_name[0]
+        return event_name[0]
     else:
         raise ValueError("Invalid message: No event type found.", message)
 
-    if event_type not in _mapping:
-        raise NotImplementedError(f"Event type {event_type} is not implemented.")
 
-    event = _mapping[event_type]
-    return event.from_raw(message)
+def _get_event_type(event_name: str) -> type[Event]:
+    if event_name not in _mapping:
+        raise NotImplementedError(f"Event name {event_name} is not implemented.")
+
+    return _mapping[event_name]
+
+
+def _get_event_from_message(message: str) -> Event:
+    event_name = _get_event_name(message)
+    event_type = _get_event_type(event_name)
+
+    return event_type.from_raw(message)

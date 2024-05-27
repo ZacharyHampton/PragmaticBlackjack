@@ -1,10 +1,11 @@
-from typing import Callable, Type, Optional
-from .event import Event, _get_event
+from typing import Callable, Type
+from .event import Event, _get_event_type, _get_event_name
 from .handler import HandlerBase
 from .websocket import Websocket
 import websockets
 import asyncio
 from .exceptions import PragmaticSessionInvalid, PragmaticDuplicateSession
+import inspect
 
 
 class Table:
@@ -21,9 +22,8 @@ class Table:
         self.handler = handler
         self.handles = handles or {}
 
-        self._event_loop = asyncio.new_event_loop()
+        self._event_loop = asyncio.get_event_loop()
         self._ws = Websocket(table_id, session_id)
-        self.connect()
 
     def register(self, handler: HandlerBase) -> None:
         """
@@ -41,15 +41,12 @@ class Table:
 
         :param event: Event type to register
         :param function: Function to call when event is triggered
-        :param raw: If True, the function will be called with the raw event data
         :return: None
         """
 
         self.handles[event] = function
 
     async def _websocket_handler(self):
-        print("Connecting to websocket")
-
         async for websocket in self._ws.get_connection():
             self._ws.current_connection = websocket
 
@@ -61,23 +58,27 @@ class Table:
                     if "duplicated_connection" in message:
                         raise PragmaticDuplicateSession("Two sessions are active.")
 
-                    await self._handle_message(message)
+                    await asyncio.create_task(self._handle_message(message))
 
             except websockets.ConnectionClosed:
                 self.has_previously_disconnected = True
                 continue
 
     async def _handle_message(self, message: str):
-        event = _get_event(message)
+        event_type = _get_event_type(_get_event_name(message))
 
-        handle = self.handles.get(type(event))
+        handle = self.handles.get(event_type)
         if handle:
-            handle(event, message)
+            argument_count = len(inspect.signature(handle).parameters)
+            event = event_type.from_raw(message)
+
+            if argument_count == 0:
+                self.handles.pop(type(event))
+            elif argument_count == 1:
+                handle(event)
+            else:
+                handle(event, message)
 
     def connect(self):
-        self._event_loop.create_task(self._websocket_handler())
-        self._event_loop.run_forever()
-
-        while not self._ws.connected:
-            pass
+        self._event_loop.run_until_complete(self._websocket_handler())
 
