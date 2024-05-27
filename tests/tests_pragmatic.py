@@ -16,3 +16,4 @@ def tests_first_test():
         }
     )
 
+    table.connect()
