@@ -58,7 +58,6 @@ class Seat(Event):
         )
 
 
-
 @dataclass
 class Pong(Event):
     """
@@ -80,7 +79,7 @@ class Pong(Event):
 @dataclass
 class Card(Event):
     """
-    Dealt to player's seat number with score value
+    Dealt to player's seat number with score value -- seat="-1" for dealer
 
     XML Example: <card seat="2" sc="9D2" score="9" game="4694781004" resulttime="Mon May 27 06:06:56 UTC 2024" initial="true" hand="0" seq="27">20</card>
     """
@@ -121,6 +120,7 @@ class PreDecision(Event):
     code: int
     action: str
     hand: int
+    decision: str
 
     @classmethod
     def from_raw(cls, data: str) -> "PreDecision":
@@ -132,6 +132,7 @@ class PreDecision(Event):
             code=int(data["@code"]),
             action=data["@action"],
             hand=int(data["@hand"]),
+            decision=data["#text"],
         )
 
 
@@ -216,6 +217,7 @@ class Decision(Event):
     code: int
     action: str
     hand: int
+    decision: str
 
     @classmethod
     def from_raw(cls, data: str) -> "Decision":
@@ -227,6 +229,7 @@ class Decision(Event):
             code=int(data["@code"]),
             action=data["@action"],
             hand=int(data["@hand"]),
+            decision=data["#text"],
         )
 
 
@@ -252,7 +255,7 @@ class VoipCC(Event):
 @dataclass
 class Dealer(Event):
     """
-    Event called after dealer scans ID
+    Event called after dealer scans ID card
 
     XML Example: <dealer id="8buotd89xl95ll40" seq="4746">Atley</dealer>
     """
@@ -319,7 +322,7 @@ class StartGame(Event):
 @dataclass
 class BetsOpen(Event):
     """
-    Event opens bets
+    Event opens bets for 12 seconds
 
     XML Example: <betsopen game="4695270804" table="bj361mstakebj361" seq="4920"></betsopen>
     """
@@ -340,7 +343,7 @@ class BetsOpen(Event):
 @dataclass
 class BetsClosingSoon(Event):
     """
-    BetsClosingSoon event
+    Event runs approximately 6 seconds after BetsOpen event
 
     XML Example: <betsclosingsoon game="4695270804" table="bj361mstakebj361" seq="4922"></betsclosingsoon>
     """
@@ -361,7 +364,7 @@ class BetsClosingSoon(Event):
 @dataclass
 class BetsClosed(Event):
     """
-    BetsClosed event
+    Timer to bet ended; no longer accepting bets
 
     XML Example: <betsclosed game="4695270804" table="bj361mstakebj361" seq="4923"></betsclosed>
     """
@@ -381,6 +384,11 @@ class BetsClosed(Event):
 
 @dataclass
 class PreBet(Event):
+    """
+    Initial bet placed by player
+
+    XML Example: <preBet seat="2" hand="0" seq="6207"></preBet>
+    """
     seat: int
     hand: int
 
@@ -396,6 +404,11 @@ class PreBet(Event):
 
 @dataclass
 class Score(Event):
+    """
+    Score event
+
+    XML Example: <score seat="2" game="4695368704" hand="0" seq="6208">10</score>
+    """
     seat: int
     game: int
     hand: int
@@ -415,6 +428,11 @@ class Score(Event):
 
 @dataclass
 class Bet(Event):
+    """
+    Bet event -- Includes amount of bet placed by player
+
+    XML Example: <bet gameId="4695368704" userId="ppc1716788013363" seat="2" hand="0" seq="6209">10</bet>
+    """
     game_id: int
     user_id: str
     seat: int
@@ -434,9 +452,13 @@ class Bet(Event):
         )
 
 
-# XML Example: <bj21plus3 seat="5" result="4" game="4695368704" hand="2" seq="6212">Lose</bj21plus3>
 @dataclass
 class Bj21Plus3(Event):
+    """
+    Event plays for 21+3 side bet -- Outcome either Win or Lose
+
+    XML Example: <bj21plus3 seat="5" result="4" game="4695368704" hand="2" seq="6212">Lose</bj21plus3>
+    """
     seat: int
     result: int
     game: int
@@ -454,9 +476,13 @@ class Bj21Plus3(Event):
         )
 
 
-#XML Example: <perfectpairs seat="5" result="4" game="4695368704" hand="3" seq="6213">Lose</perfectpairs>
 @dataclass
 class PerfectPairs(Event):
+    """
+    Event plays for perfect pair side bet -- Outcome either Win or Lose
+
+    XML Example: <perfectpairs seat="5" result="4" game="4695368704" hand="3" seq="6213">Lose</perfectpairs>
+    """
     seat: int
     result: int
     game: int
@@ -474,9 +500,13 @@ class PerfectPairs(Event):
         )
 
 
-#XML Example: <betresult seat="2" game="4695368704" seq="6266"><handresult result="3" hand="0" >Win</handresult></betresult>
 @dataclass
 class BetResult(Event):
+    """
+    Event signifies round outcome for player -- Results can be: Win, Lose, Push, Blackjack, Bust
+
+    XML Example: <betresult seat="2" game="4695368704" seq="6266"><handresult result="3" hand="0" >Win</handresult></betresult>
+    """
     seat: int
     game: int
     hand_result: str
@@ -492,9 +522,13 @@ class BetResult(Event):
         )
 
 
-#XMl Example: <handresult seat="3" result="2" game="4695368704" hand="0" seq="6269">Blackjack</handresult>
 @dataclass
 class HandResult(Event):
+    """
+    result integer corresponds with outcome: 2=Blackjack, 3=Win, 4=Lose, 5=Push, 6=Bust
+
+    XML Example: <handresult seat="3" result="2" game="4695368704" hand="0" seq="6269">Blackjack</handresult>
+    """
     seat: int
     result: int
     game: int
@@ -512,9 +546,13 @@ class HandResult(Event):
         )
 
 
-#XML Example: <wins gameId="4695368704" seat6="0" seat5="0" seat0="0" tableId="bj361mstakebj361" seat4="0" seat3="1" seat2="1" seat1="0" seq="6277"></wins>
 @dataclass
 class Wins(Event):
+    """
+    Amount of wins each player has accumulated for each round they win in a row (appears as a medal next to username)
+
+    XML Example: <wins gameId="4695368704" seat6="0" seat5="0" seat0="0" tableId="bj361mstakebj361" seat4="0" seat3="1" seat2="1" seat1="0" seq="6277"></wins>
+    """
     game_id: int
     table_id: str
     seats: list[int]
@@ -530,9 +568,13 @@ class Wins(Event):
         )
 
 
-# XML Example: <bjGameEnd id="4695368704" seq="6276"></bjGameEnd>
 @dataclass
 class BjGameEnd(Event):
+    """
+    Event signifies end of current round
+
+    XML Example: <bjGameEnd id="4695368704" seq="6276"></bjGameEnd>
+    """
     id: int
 
     @classmethod
@@ -544,9 +586,13 @@ class BjGameEnd(Event):
         )
 
 
-#XML Example: <startGameError code="bj361mstakebj361" seatNum="6" desc="ppc1706782600787" seq="6284"></startGameError>
 @dataclass
 class StartGameError(Event):
+    """
+    StartGameError event
+
+    #XML Example: <startGameError code="bj361mstakebj361" seatNum="6" desc="ppc1706782600787" seq="6284"></startGameError>
+    """
     code: str
     seat_num: int
     desc: str
@@ -562,9 +608,13 @@ class StartGameError(Event):
         )
 
 
-#XML Example: <startDealing game="4695377904" table="bj361mstakebj361" seq="6291"></startDealing>
 @dataclass
 class StartDealing(Event):
+    """
+    Dealer will start dealing cards to table
+
+    XML Example: <startDealing game="4695377904" table="bj361mstakebj361" seq="6291"></startDealing>
+    """
     game: int
     table: str
 
@@ -578,9 +628,13 @@ class StartDealing(Event):
         )
 
 
-#XML Example: <timer dns="false" id="4695383504" seq="6357">12</timer>
 @dataclass
 class Timer(Event):
+    """
+    Timer event
+
+    XML Example: <timer dns="false" id="4695383504" seq="6357">12</timer>
+    """
     dns: bool
     id: int
     time: int
@@ -596,9 +650,13 @@ class Timer(Event):
         )
 
 
-#XML Example: <notinsured seat="1" auto="false" hand="0" seq="3724"></notinsured>
 @dataclass
 class NotInsured(Event):
+    """
+    Checks if player is insured
+
+    XML Example: <notinsured seat="1" auto="false" hand="0" seq="3724"></notinsured>
+    """
     seat: int
     auto: bool
     hand: int
@@ -614,9 +672,13 @@ class NotInsured(Event):
         )
 
 
-#XML Example: <mainBetCount gameId="4695432804" mainBetCount="6" seq="6891"></mainBetCount>
 @dataclass
 class MainBetCount(Event):
+    """
+    MainBetCount event
+
+    XML Example: <mainBetCount gameId="4695432804" mainBetCount="6" seq="6891"></mainBetCount>
+    """
     game_id: int
     main_bet_count: int
 
@@ -630,9 +692,13 @@ class MainBetCount(Event):
         )
 
 
-#XML Example: <cardinc seat="-1" game="4695418404" initial="false" splitinitial="false" hand="0" seq="6830"></cardinc>
 @dataclass
 class CardInc(Event):
+    """
+    CardInc event
+
+    XML Example: <cardinc seat="1" game="4695418404" initial="true" splitinitial="false" hand="0" seq="6831"></cardinc>
+    """
     seat: int
     game: int
     initial: bool
@@ -655,7 +721,7 @@ class CardInc(Event):
 @dataclass
 class CurrentShoe(Event):
     """
-    Event signifies deck reshuffle for shoe
+    Event signifies shoe change after current round ends
 
     XML Example: <currentShoe cc="0" code="blue" changeShoe="true" seq="7199"></currentShoe>
     """
@@ -677,6 +743,7 @@ class CurrentShoe(Event):
 @dataclass
 class InsuredBb(Event):
     """
+    InsuredBb event
 
     XML Example: <insured_bb seat="6" hand="" seq="7709"></insured_bb>
     """
@@ -732,6 +799,28 @@ class OfferOver(Event):
 
         return cls(
             id=int(data["@id"]),
+        )
+
+
+@dataclass
+class Subscribe(Event):
+    """
+    Subscribe event
+
+    XML Example: <subscribe channel="table-bj361mstakebj361" table="bj361mstakebj361" status="success" seq="49"></subscribe>
+    """
+    channel: str
+    table: str
+    status: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "Subscribe":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            channel=data["@channel"],
+            table=data["@table"],
+            status=data["@status"],
         )
 
 
