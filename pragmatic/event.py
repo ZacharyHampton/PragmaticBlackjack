@@ -930,7 +930,7 @@ _mapping = {
     "wins": Wins,
     "bjgameend": BjGameEnd,
     "startgameerror": StartGameError,
-    "startdealing": StartDealing,
+    "startDealing": StartDealing,
     "timer": Timer,
     "notinsured": NotInsured,
     "mainbetcount": MainBetCount,
@@ -941,6 +941,10 @@ _mapping = {
     "offerover": OfferOver,
     "subscribe": Subscribe,
     "table": TableEvent,
+    "duplicated_connection": DuplicatedConnection,
+    "closeConnection": CloseConnection,
+    "logout": Logout,
+    "betStats": BetStats,
 }
 
 
