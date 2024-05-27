@@ -1,6 +1,8 @@
 from typing import Callable
 from .event import Event
 from .handler import HandlerBase, Handle
+import websockets
+import websocket
 
 
 class Table:
@@ -15,7 +17,9 @@ class Table:
         self.session_id = session_id
 
         self.handler = handler
-        self.handles = handles
+        self.handles = handles or {}
+
+        self._ws = websockets.Web
 
     def register(self, handler: HandlerBase) -> None:
         """
