@@ -14,6 +14,27 @@ class Event:
 
 
 @dataclass
+class Table(Event):
+    """
+    Creates a new table or opens an existing table
+
+    XML Example: <table newTable="false" openTime="" seq="1">BJ36.1</table>
+    """
+
+    new_table: bool
+    open_time: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "Table":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            new_table=data["@newTable"] == "true",
+            open_time=data["@openTime"],
+        )
+
+
+@dataclass
 class Seat(Event):
     """
     Seat event
