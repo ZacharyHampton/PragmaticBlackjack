@@ -1,8 +1,10 @@
-from typing import Callable
-from .event import Event
-from .handler import HandlerBase, Handle
+from typing import Callable, Type, Optional
+from .event import Event, _get_event
+from .handler import HandlerBase
+from .websocket import Websocket
 import websockets
-import websocket
+import asyncio
+from .exceptions import PragmaticSessionInvalid, PragmaticDuplicateSession
 
 
 class Table:
@@ -11,7 +13,7 @@ class Table:
             table_id: str,
             session_id: str,
             handler: HandlerBase = None,
-            handles: dict[Event, Handle] = None,
+            handles: dict[Type[Event], Callable] = None,
     ):
         self.table_id = table_id
         self.session_id = session_id
@@ -19,7 +21,9 @@ class Table:
         self.handler = handler
         self.handles = handles or {}
 
-        self._ws = websockets.Web
+        self._event_loop = asyncio.new_event_loop()
+        self._ws = Websocket(table_id, session_id)
+        self.connect()
 
     def register(self, handler: HandlerBase) -> None:
         """
@@ -31,7 +35,7 @@ class Table:
 
         self.handler = handler
 
-    def register_handle(self, event: Event, function: Callable[[Event | str], None], raw: bool = False) -> None:
+    def register_handle(self, event: Type[Event], function: Callable) -> None:
         """
         Register an event to a function
 
@@ -41,7 +45,39 @@ class Table:
         :return: None
         """
 
-        self.handles[event] = Handle(function, raw)
+        self.handles[event] = function
+
+    async def _websocket_handler(self):
+        print("Connecting to websocket")
+
+        async for websocket in self._ws.get_connection():
+            self._ws.current_connection = websocket
+
+            try:
+                async for message in websocket:
+                    if message == "Connection Exception":
+                        raise PragmaticSessionInvalid("Session is invalid.")
+
+                    if "duplicated_connection" in message:
+                        raise PragmaticDuplicateSession("Two sessions are active.")
+
+                    await self._handle_message(message)
+
+            except websockets.ConnectionClosed:
+                self.has_previously_disconnected = True
+                continue
+
+    async def _handle_message(self, message: str):
+        event = _get_event(message)
+
+        handle = self.handles.get(type(event))
+        if handle:
+            handle(event, message)
 
     def connect(self):
-        pass
+        self._event_loop.create_task(self._websocket_handler())
+        self._event_loop.run_forever()
+
+        while not self._ws.connected:
+            pass
+

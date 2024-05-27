@@ -12,6 +12,7 @@ websockets = "^12.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
+python-dotenv = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]

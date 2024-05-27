@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import xmltodict
+import re
 
 
 @dataclass
@@ -732,3 +733,53 @@ class OfferOver(Event):
         return cls(
             id=int(data["@id"]),
         )
+
+
+_mapping = {
+    "seat": Seat,
+    "pong": Pong,
+    "card": Card,
+    "predecision": PreDecision,
+    "decisioninc": DecisionInc,
+    "predecisioninc": PreDecisionInc,
+    "decision": Decision,
+    "voip_cc": VoipCC,
+    "dealer": Dealer,
+    "game": Game,
+    "startgame": StartGame,
+    "betsopen": BetsOpen,
+    "betsclosingsoon": BetsClosingSoon,
+    "betsclosed": BetsClosed,
+    "prebet": PreBet,
+    "score": Score,
+    "bet": Bet,
+    "bj21plus3": Bj21Plus3,
+    "perfectpairs": PerfectPairs,
+    "betresult": BetResult,
+    "handresult": HandResult,
+    "wins": Wins,
+    "bjgameend": BjGameEnd,
+    "startgameerror": StartGameError,
+    "startdealing": StartDealing,
+    "timer": Timer,
+    "notinsured": NotInsured,
+    "mainbetcount": MainBetCount,
+    "cardinc": CardInc,
+    "currentshoe": CurrentShoe,
+    "insuredbb": InsuredBb,
+    "insured": Insured,
+    "offerover": OfferOver,
+}
+
+
+def _get_event(message: str) -> Event:
+    if event_name := re.findall(r"<(.*?) ", message):
+        event_type = event_name[0]
+    else:
+        raise ValueError("Invalid message: No event type found.", message)
+
+    if event_type not in _mapping:
+        raise NotImplementedError(f"Event type {event_type} is not implemented.")
+
+    event = _mapping[event_type]
+    return event.from_raw(message)

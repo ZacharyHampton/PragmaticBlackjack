@@ -25,32 +25,19 @@ class Websocket:
     def uri(self):
         return "wss://gs4.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}".format(
             self._session_id, self._table_id
-        ) + "&reconnect=true" if self.has_previously_disconnected else ""
+        ) + ("&reconnect=true" if self.has_previously_disconnected else "")
 
     @property
     def connected(self):
         return self.current_connection is not None and self.current_connection.open
 
-    async def _handler(self):
-        async for websocket in websockets.connect(
+    def get_connection(self):
+        return websockets.connect(
                 self.uri,
                 origin=Origin("https://client.pragmaticplaylive.net"),
                 ping_interval=10,
                 create_protocol=_CustomPingWebSocket
-        ):
-            self.current_connection = websocket
-
-            try:
-                async for message in websocket:
-                    #: TODO: process message
-                    print(message)
-
-            except websockets.ConnectionClosed:
-                self.has_previously_disconnected = True
-                continue
+        )
 
     def send_raw_message(self, message: str):
         asyncio.create_task(self.current_connection.send(message))
-
-    def connect(self):
-        asyncio.create_task(self._handler())
