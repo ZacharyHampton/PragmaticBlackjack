@@ -1,6 +1,7 @@
 import websockets
 from websockets import Origin
 import time
+import asyncio
 
 
 class _CustomPingWebSocket(websockets.WebSocketClientProtocol):
@@ -18,6 +19,7 @@ class Websocket:
         self._session_id = session_id
 
         self.has_disconnected = False
+        self.current_connection: websockets.WebSocketClientProtocol | None = None
 
     @property
     def uri(self):
@@ -32,10 +34,16 @@ class Websocket:
                 ping_interval=10,
                 create_protocol=_CustomPingWebSocket
         ):
+            self.current_connection = websocket
+
             try:
                 async for message in websocket:
+                    #: TODO: process message
                     print(message)
 
             except websockets.ConnectionClosed:
                 self.has_disconnected = True
                 continue
+
+    def send_raw_message(self, message: str):
+        asyncio.create_task(self.current_connection.send(message))
