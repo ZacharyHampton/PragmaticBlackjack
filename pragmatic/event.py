@@ -14,7 +14,7 @@ class Event:
 
 
 @dataclass
-class Table(Event):
+class TableEvent(Event):
     """
     Creates a new table or opens an existing table
 
@@ -25,8 +25,9 @@ class Table(Event):
     open_time: str
 
     @classmethod
-    def from_raw(cls, data: str) -> "Table":
+    def from_raw(cls, data: str) -> "TableEvent":
         data = cls._xml_to_json(data)
+        data = data["table"]
 
         return cls(
             new_table=data["@newTable"] == "true",
@@ -287,6 +288,7 @@ class Dealer(Event):
     @classmethod
     def from_raw(cls, data: str) -> "Dealer":
         data = cls._xml_to_json(data)
+        data = data["dealer"]
 
         return cls(
             id=data["@id"],
@@ -879,6 +881,8 @@ _mapping = {
     "insuredbb": InsuredBb,
     "insured": Insured,
     "offerover": OfferOver,
+    "subscribe": Subscribe,
+    "table": TableEvent,
 }
 
 
