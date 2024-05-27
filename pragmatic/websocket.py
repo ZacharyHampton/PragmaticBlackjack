@@ -18,14 +18,18 @@ class Websocket:
         self._table_id = table_id
         self._session_id = session_id
 
-        self.has_disconnected = False
+        self.has_previously_disconnected = False
         self.current_connection: websockets.WebSocketClientProtocol | None = None
 
     @property
     def uri(self):
         return "wss://gs4.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}".format(
             self._session_id, self._table_id
-        ) + "&reconnect=true" if self.has_disconnected else ""
+        ) + "&reconnect=true" if self.has_previously_disconnected else ""
+
+    @property
+    def connected(self):
+        return self.current_connection is not None and self.current_connection.open
 
     async def _handler(self):
         async for websocket in websockets.connect(
@@ -42,8 +46,11 @@ class Websocket:
                     print(message)
 
             except websockets.ConnectionClosed:
-                self.has_disconnected = True
+                self.has_previously_disconnected = True
                 continue
 
     def send_raw_message(self, message: str):
         asyncio.create_task(self.current_connection.send(message))
+
+    def connect(self):
+        asyncio.create_task(self._handler())
