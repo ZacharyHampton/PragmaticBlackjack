@@ -847,6 +847,66 @@ class Subscribe(Event):
         )
 
 
+@dataclass
+class DuplicatedConnection(Event):
+    """
+    DuplicatedConnection event
+
+    XML Example: <duplicated_connection seq="11"></duplicated_connection>
+    """
+
+    @classmethod
+    def from_raw(cls, data: str) -> "DuplicatedConnection":
+        return cls()
+
+
+@dataclass
+class CloseConnection(Event):
+    """
+    CloseConnection event
+
+    XML Example: <closeConnection seq="-1">Duplicate connection</closeConnection>
+    """
+
+    @classmethod
+    def from_raw(cls, data: str) -> "CloseConnection":
+        return cls()
+
+
+@dataclass
+class Logout(Event):
+    """
+    Logout event
+
+    XML Example: <logout id="ppc1716681691385" reason="DOUBLE_SUBSCRIPTION">f5acc50c-ba82-4246-be3b-98c3533afc5f f5acc50c-ba82-4246-be3b-98c3533afc5f</logout>
+    """
+
+    id: str
+    reason: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "Logout":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            id=data["@id"],
+            reason=data["@reason"],
+        )
+
+
+@dataclass
+class BetStats(Event):
+    """
+    BetStats event
+
+    XML Example: <betStats seq="7"></betStats>
+    """
+
+    @classmethod
+    def from_raw(cls, data: str) -> "BetStats":
+        return cls()
+
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
