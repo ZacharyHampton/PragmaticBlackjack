@@ -19,11 +19,20 @@ class Table:
         self.table_id = table_id
         self.session_id = session_id
 
-        self.handler = handler
         self.handles = handles or {}
+
+        if handler:
+            self._process_base_class_handles(handler)
 
         self._event_loop = asyncio.get_event_loop()
         self._ws = Websocket(table_id, session_id)
+
+    def _process_base_class_handles(self, handler_class: HandlerBase):
+        for handle in handler_class.__mapping__:
+            if handle in self.handles:
+                continue
+
+            self.register_handle(handle, getattr(handler_class, handler_class.__mapping__[handle]))
 
     def register(self, handler: HandlerBase) -> None:
         """
@@ -33,7 +42,7 @@ class Table:
         :return: None
         """
 
-        self.handler = handler
+        self._process_base_class_handles(handler)
 
     def register_handle(self, event: Type[Event], function: Callable) -> None:
         """
@@ -69,10 +78,11 @@ class Table:
 
         handle = self.handles.get(event_type)
         if handle:
-            argument_count = len(inspect.signature(handle).parameters)
+            details = inspect.signature(handle)
+            argument_count = len(details.parameters)
             event = event_type.from_raw(message)
 
-            if argument_count == 0:
+            if argument_count == 0:  #: Function has no arguments, therefore useless
                 self.handles.pop(type(event))
             elif argument_count == 1:
                 handle(event)
@@ -85,3 +95,16 @@ class Table:
     def sit(self, seat_number: int):
         self._ws.send_raw_message("<command channel='table-{}' > <sitdown gameMode='blackjack_desktop' seatNum='{}'></sitdown></command>".format(self.table_id, seat_number))
 
+    def handle(self, event: Type[Event]):
+        """
+        Table.handle decorator, used to register events to functions
+
+        :param event:
+        :return:
+        """
+
+        def wrapper(func):
+            self.register_handle(event, func)
+            return func
+
+        return wrapper
