@@ -107,7 +107,7 @@ class Card(Event):
 
     seat: int
     sc: str
-    score: int
+    score: str
     game: int
     result_time: str
     initial: bool
@@ -120,7 +120,7 @@ class Card(Event):
         return cls(
             seat=int(data["@seat"]),
             sc=data["@sc"],
-            score=int(data["@score"]),
+            score=data["@score"],
             game=int(data["@game"]),
             result_time=data["@resulttime"],
             initial=data["@initial"] == "true",
@@ -166,7 +166,7 @@ class DecisionInc(Event):
     """
 
     seat: int
-    score: int
+    score: str | None
     game: int
     can_split: bool
     dealer_score: int
@@ -183,9 +183,9 @@ class DecisionInc(Event):
 
         return cls(
             seat=int(data["@seat"]),
-            score=int(data["@score"]),
+            score=data.get("@score"),
             game=int(data["@game"]),
-            can_split=data["@cansplit"] == "true",
+            can_split=data.get("@cansplit") == "true",
             dealer_score=int(data["@dealerscore"]),
             id=data["@id"],
             time=int(data["@time"]),
@@ -574,7 +574,7 @@ class Wins(Event):
 
     XML Example: <wins gameId="4695368704" seat6="0" seat5="0" seat0="0" tableId="bj361mstakebj361" seat4="0" seat3="1" seat2="1" seat1="0" seq="6277"></wins>
     """
-    game_id: int
+    game_id: str
     table_id: str
     seats: list[int]
 
@@ -583,9 +583,9 @@ class Wins(Event):
         data = cls._xml_to_json(data)
 
         return cls(
-            game_id=int(data["@gameId"]),
+            game_id=data.get("@gameId"),
             table_id=data["@tableId"],
-            seats=[int(data[f"seat{i}"]) for i in range(7)],
+            seats=[int(data[f"seat{i}"]) for i in range(7) if f"seat{i}" in data],
         )
 
 
@@ -910,17 +910,19 @@ class Command(Event):
     """
     Command event
 
-    XML Example: <command channel='table-bj335mstakebj335' > <sitdown gameMode='blackjack_desktop' seatNum='4'></sitdown></command>
+    XML Example: <command channel="table-bj361mstakebj361" status="success" seq="10"></command>
     """
 
     channel: str
+    status: str
 
     @classmethod
     def from_raw(cls, data: str) -> "Command":
-        data = cls._xml_to_json(data, non_root=False)
+        data = cls._xml_to_json(data)
 
         return cls(
             channel=data["@channel"],
+            status=data["@status"],
         )
 
 
@@ -964,6 +966,7 @@ _mapping = {
     "closeConnection": CloseConnection,
     "logout": Logout,
     "betStats": BetStats,
+    "command": Command,
 }
 
 

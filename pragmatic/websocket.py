@@ -9,8 +9,9 @@ class _CustomPingWebSocket(websockets.WebSocketClientProtocol):
         super().__init__(*args, **kwargs)
 
     async def ping(self, *args, **kwargs):
-        await super().ping(*args, **kwargs)
         await super().send('<ping time={}></ping>'.format(int(time.time())))
+
+        return super().ping(*args, **kwargs)
 
 
 class Websocket:
