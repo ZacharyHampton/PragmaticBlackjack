@@ -82,3 +82,6 @@ class Table:
     def connect(self):
         self._event_loop.run_until_complete(self._websocket_handler())
 
+    def sit(self, seat_number: int):
+        self._ws.send_raw_message("<command channel='table-{}' > <sitdown gameMode='blackjack_desktop' seatNum='{}'></sitdown></command>".format(self.table_id, seat_number))
+
