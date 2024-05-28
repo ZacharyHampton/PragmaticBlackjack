@@ -42,15 +42,15 @@ class Seat(Event):
     XML Example: <seat seats_taken="6" user_id="ppc1643442204078" idle="true" num="5" event="stand" table_id="bj361mstakebj361" type="timeout" seq="7067"></seat>
     """
 
-    casino_id: str
-    country_code: str
-    screen_name: str
-    user_id: str
-    casino_name: str
-    num: int
+    casino_id: str | None
+    country_code: str | None
+    screen_name: str | None
+    user_id: str | None
+    casino_name: str | None
+    seat_number: int
     event: str
     table_id: str
-    enrollment_date: str
+    enrollment_date: str | None
     currency_code: str
     sidebets: bool
     seats_taken: int | None = None
@@ -62,17 +62,17 @@ class Seat(Event):
         data = cls._xml_to_json(data)
 
         return cls(
-            casino_id=data["@casino_id"],
-            country_code=data["@country_code"],
-            screen_name=data["@screen_name"],
-            user_id=data["@user_id"],
-            casino_name=data["@casino_name"],
-            num=int(data["@num"]),
+            casino_id=data.get("@casino_id"),
+            country_code=data.get("@country_code"),
+            screen_name=data.get("@screen_name"),
+            user_id=data.get("@user_id"),
+            casino_name=data.get("@casino_name"),
+            seat_number=int(data["@num"]),
             event=data["@event"],
             table_id=data["@table_id"],
-            enrollment_date=data["@enrollment_date"],
+            enrollment_date=data.get("@enrollment_date"),
             currency_code=data["@currency_code"],
-            sidebets=data["@sidebets"] == "true",
+            sidebets=data.get("@sidebets") == "true",
             seats_taken=int(data["@seats_taken"]) if "@seats_taken" in data else None,
             idle=data["@idle"] == "true" if "@idle" in data else None,
             type=data["@type"] if "@type" in data else None,
@@ -302,7 +302,7 @@ class Game(Event):
     XML Example: <game id="4695270804" dealNow="false" seq="4918">07:13:13</game>
     """
 
-    id: int
+    id: str
     deal_now: bool
 
     @classmethod
@@ -310,7 +310,7 @@ class Game(Event):
         data = cls._xml_to_json(data)
 
         return cls(
-            id=int(data["@id"]),
+            id=data["@id"],
             deal_now=data["@dealNow"] == "true",
         )
 
@@ -905,22 +905,41 @@ class BetStats(Event):
         return cls()
 
 
+@dataclass
+class Command(Event):
+    """
+    Command event
+
+    XML Example: <command channel='table-bj335mstakebj335' > <sitdown gameMode='blackjack_desktop' seatNum='4'></sitdown></command>
+    """
+
+    channel: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "Command":
+        data = cls._xml_to_json(data, non_root=False)
+
+        return cls(
+            channel=data["@channel"],
+        )
+
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
     "card": Card,
     "predecision": PreDecision,
     "decisioninc": DecisionInc,
-    "predecisioninc": PreDecisionInc,
+    "pre_decisioninc": PreDecisionInc,
     "decision": Decision,
     "voip_cc": VoipCC,
     "dealer": Dealer,
     "game": Game,
-    "startgame": StartGame,
+    "startGame": StartGame,
     "betsopen": BetsOpen,
     "betsclosingsoon": BetsClosingSoon,
     "betsclosed": BetsClosed,
-    "prebet": PreBet,
+    "pre_bet": PreBet,
     "score": Score,
     "bet": Bet,
     "bj21plus3": Bj21Plus3,
@@ -928,15 +947,15 @@ _mapping = {
     "betresult": BetResult,
     "handresult": HandResult,
     "wins": Wins,
-    "bjgameend": BjGameEnd,
-    "startgameerror": StartGameError,
+    "bjGameEnd": BjGameEnd,
+    "startGameError": StartGameError,
     "startDealing": StartDealing,
     "timer": Timer,
     "notinsured": NotInsured,
-    "mainbetcount": MainBetCount,
+    "mainBetCount": MainBetCount,
     "cardinc": CardInc,
     "currentshoe": CurrentShoe,
-    "insuredbb": InsuredBb,
+    "insured_bb": InsuredBb,
     "insured": Insured,
     "offerover": OfferOver,
     "subscribe": Subscribe,
