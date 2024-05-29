@@ -94,7 +94,7 @@ class Table:
         self._event_loop.run_until_complete(self._websocket_handler())
 
     def sit(self, seat_number: int) -> Seat:
-        seat = Seat(self._ws, self.table_id, seat_number)
+        seat = Seat(self._ws, self.table_id, seat_number, self.session_id)
         seat.sit()
 
         return seat
