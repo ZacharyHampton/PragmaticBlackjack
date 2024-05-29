@@ -34,7 +34,7 @@ class Sit(HandlerBase):
         self.seats.append(event)
 
         if self.seat and self.seat.seat_number == event.seat_number:  #: we have successfully sat down
-            time.sleep(5)
+            time.sleep(5) # test
             self.seat.leave()
             self.seat = None
             logger.info(f"Left seat {event.seat_number}.")
