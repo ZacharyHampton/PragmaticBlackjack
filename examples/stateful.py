@@ -3,6 +3,7 @@ from pragmatic.event import Seat
 import os
 import logging
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
@@ -16,23 +17,33 @@ class Sit(HandlerBase):
     def __init__(self):
         super().__init__()
 
-        self.seats: list[Seat] = []
+        self.seats: list[SeatEvent] = []
+        self.seat: Seat | None = None
 
     @property
-    def get_empty_seat(self):
+    def get_empty_seat(self) -> int | None:
         seat_numbers = [seat.seat_number for seat in self.seats]
+        empty_seats = [x for x in range(0, 6) if x not in seat_numbers]
 
-        return max([x for x in range(0, 6) if x not in seat_numbers])
+        if empty_seats:
+            return max(empty_seats)
 
     def handle_seat(self, event: Seat, raw: str = None):
         logger.info(f"Seated player {event.screen_name} at seat {event.seat_number}.")
 
         self.seats.append(event)
 
+        if self.seat and self.seat.seat_number == event.seat_number:  #: we have successfully sat down
+            time.sleep(5)
+            self.seat.leave()
+            self.seat = None
+            logger.info(f"Left seat {event.seat_number}.")
+
     def handle_subscribe(self, event: Subscribe, raw: str = None):
         logger.info("Game is ready.")
 
-        table.sit(self.get_empty_seat)
+        seat = table.sit(self.get_empty_seat)
+        self.seat = seat
 
 
 def main():
