@@ -2,6 +2,7 @@ from typing import Callable, Type
 from .event import Event, _get_event_type, _get_event_name
 from .handler import HandlerBase
 from .websocket import Websocket
+from .seat import Seat
 import websockets
 import asyncio
 from .exceptions import PragmaticSessionInvalid, PragmaticDuplicateSession
@@ -92,8 +93,11 @@ class Table:
     def connect(self):
         self._event_loop.run_until_complete(self._websocket_handler())
 
-    def sit(self, seat_number: int):
-        self._ws.send_raw_message("<command channel='table-{}' > <sitdown gameMode='blackjack_desktop' seatNum='{}'></sitdown></command>".format(self.table_id, seat_number))
+    def sit(self, seat_number: int) -> Seat:
+        seat = Seat(self._ws, self.table_id, seat_number)
+        seat.sit()
+
+        return seat
 
     def handle(self, event: Type[Event]):
         """

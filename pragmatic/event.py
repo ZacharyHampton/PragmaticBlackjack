@@ -169,7 +169,7 @@ class DecisionInc(Event):
     score: str | None
     game: int
     can_split: bool
-    dealer_score: int
+    dealer_score: str | None
     id: str
     time: int
     can_double: bool
@@ -186,7 +186,7 @@ class DecisionInc(Event):
             score=data.get("@score"),
             game=int(data["@game"]),
             can_split=data.get("@cansplit") == "true",
-            dealer_score=int(data["@dealerscore"]),
+            dealer_score=data.get("@dealerscore"),
             id=data["@id"],
             time=int(data["@time"]),
             can_double=data["@candouble"] == "true",
