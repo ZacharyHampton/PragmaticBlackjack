@@ -1,5 +1,6 @@
 from pragmatic import Table, HandlerBase, Event, Subscribe
-from pragmatic.event import Seat
+from pragmatic.event import Seat as SeatEvent
+from pragmatic.seat import Seat
 import os
 import logging
 from dotenv import load_dotenv
@@ -28,9 +29,8 @@ class Sit(HandlerBase):
         if empty_seats:
             return max(empty_seats)
 
-    def handle_seat(self, event: Seat, raw: str = None):
+    def handle_seat(self, event: SeatEvent, raw: str = None):
         logger.info(f"Seated player {event.screen_name} at seat {event.seat_number}.")
-
         self.seats.append(event)
 
         if self.seat and self.seat.seat_number == event.seat_number:  #: we have successfully sat down
