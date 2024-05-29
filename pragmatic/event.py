@@ -71,7 +71,7 @@ class Seat(Event):
             event=data["@event"],
             table_id=data["@table_id"],
             enrollment_date=data.get("@enrollment_date"),
-            currency_code=data["@currency_code"],
+            currency_code=data.get("@currency_code"),
             sidebets=data.get("@sidebets") == "true",
             seats_taken=int(data["@seats_taken"]) if "@seats_taken" in data else None,
             idle=data["@idle"] == "true" if "@idle" in data else None,
@@ -171,7 +171,7 @@ class DecisionInc(Event):
     can_split: bool
     dealer_score: str | None
     id: str
-    time: int
+    time: int | None
     can_double: bool
     pre_auto_stand: bool
     user_id: str
@@ -188,7 +188,7 @@ class DecisionInc(Event):
             can_split=data.get("@cansplit") == "true",
             dealer_score=data.get("@dealerscore"),
             id=data["@id"],
-            time=int(data["@time"]),
+            time=int(data.get("@time")) if "@time" in data else None,
             can_double=data["@candouble"] == "true",
             pre_auto_stand=data["@preautostand"] == "true",
             user_id=data["@userid"],
