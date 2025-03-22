@@ -1,18 +1,18 @@
 import os
 from dotenv import load_dotenv
-import pragmatic
+import pragmatic_blackjack
 
 load_dotenv()
 
 
 def tests_first_test():
-    def dealer_handler(event: pragmatic.Dealer, raw: str = None):
+    def dealer_handler(event: pragmatic_blackjack.Dealer, raw: str = None):
         print(event)
 
-    table = pragmatic.Table(
+    table = pragmatic_blackjack.Table(
         os.getenv("TABLE_ID"), os.getenv("SESSION_ID"),
         handles={
-            pragmatic.Dealer: dealer_handler
+            pragmatic_blackjack.Dealer: dealer_handler
         }
     )
 

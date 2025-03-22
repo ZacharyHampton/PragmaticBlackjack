@@ -1,9 +1,14 @@
 [tool.poetry]
-name = "pragmatic"
+name = "pragmatic-blackjack"
 version = "2.0.0"
 description = "Play on Pragmatic Play Blackjack tables through Python."
 authors = ["Zachary Hampton <zachary@bunsly.com>"]
 readme = "README.md"
+packages = [
+    { include = "pragmatic" },
+]
+
+[tool.poetry.scripts]
 
 [tool.poetry.dependencies]
 python = "^3.10"

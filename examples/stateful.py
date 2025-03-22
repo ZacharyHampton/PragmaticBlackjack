@@ -1,6 +1,6 @@
-from pragmatic import Table, HandlerBase, Event, Subscribe
-from pragmatic.event import Seat as SeatEvent
-from pragmatic.seat import Seat
+from pragmatic_blackjack import Table, HandlerBase, Event, Subscribe
+from pragmatic_blackjack.event import Seat as SeatEvent
+from pragmatic_blackjack.seat import Seat
 import os
 import logging
 from dotenv import load_dotenv
