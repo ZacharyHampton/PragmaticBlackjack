@@ -4,3 +4,7 @@ class PragmaticSessionInvalid(Exception):
 
 class PragmaticDuplicateSession(Exception):
     pass
+
+
+class PragmaticInvalidEvent(Exception):
+    pass

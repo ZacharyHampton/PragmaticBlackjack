@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pragmatic-blackjack"
+version = "2.0.0"
+description = "Play on Pragmatic Play Blackjack tables through Python."
+authors = ["Zachary Hampton <zachary@bunsly.com>"]
+readme = "README.md"
+packages = [
+    { include = "pragmatic" },
+]
+
+[tool.poetry.scripts]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+xmltodict = "^0.13.0"
+websockets = "^12.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.1"
+python-dotenv = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
