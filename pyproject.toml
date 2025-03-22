@@ -5,8 +5,6 @@ description = "Play on Pragmatic Play Blackjack tables through Python."
 authors = ["Zachary Hampton <zachary@bunsly.com>"]
 readme = "README.md"
 
-[tool.poetry.scripts]
-
 [tool.poetry.dependencies]
 python = "^3.10"
 xmltodict = "^0.13.0"
