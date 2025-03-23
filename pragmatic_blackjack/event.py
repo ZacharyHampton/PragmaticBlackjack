@@ -928,6 +928,30 @@ class ScreenName(Event):
             user_id=data["@userId"],
         )
 
+
+class Switch(Event):
+    """
+    Switch event
+
+    XML Example: '<switch gameServer="gs14" tableId="bjusbim6hcmbj272" httpAddress="https://gs14.pragmaticplaylive.net" wsAddress="wss://gs14.pragmaticplaylive.net/game" seq="0"></switch>'
+    """
+
+    game_server: str
+    table_id: str
+    http_address: str
+    ws_address: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "Switch":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            game_server=data["@gameServer"],
+            table_id=data["@tableId"],
+            http_address=data["@httpAddress"],
+            ws_address=data["@wsAddress"],
+        )
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -971,6 +995,7 @@ _mapping = {
     "command": Command,
     "dealNow": DealNow,
     "screenName": ScreenName,
+    "switch": Switch,
 }
 #: TODO: switch (triggered by wrong number in uri), session
 

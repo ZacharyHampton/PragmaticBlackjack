@@ -15,17 +15,18 @@ class _CustomPingWebSocket(websockets.WebSocketClientProtocol):
 
 
 class Websocket:
-    def __init__(self, table_id: str, session_id: str):
+    def __init__(self, table_id: str, session_id: str, game_server: str = "gs14"):
         self._table_id = table_id
         self._session_id = session_id
+        self._game_server = game_server
 
         self.has_previously_disconnected = False
         self.current_connection: websockets.WebSocketClientProtocol | None = None
 
     @property
     def uri(self):
-        return "wss://gs14.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}".format(
-            self._session_id, self._table_id
+        return "wss://{}.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}".format(
+            self._game_server, self._session_id, self._table_id
         ) + ("&reconnect=true" if self.has_previously_disconnected else "")
 
     @property

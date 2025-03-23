@@ -1,5 +1,5 @@
 from typing import Callable, Type
-from .event import Event, _get_event_type, _get_event_name
+from .event import Event, _get_event_type, _get_event_name, Switch
 from .handler import HandlerBase
 from .websocket import Websocket
 from .seat import Seat
@@ -59,6 +59,12 @@ class Table:
         else:
             self.handles[event] = [function]
 
+    def handle_switch(self, event: Switch):
+        self.disconnect()
+
+        self._ws = Websocket(self.table_id, self.session_id, event.game_server)
+        return self.connect()
+
     async def _websocket_handler(self):
         async for websocket in self._ws.get_connection():
             self._ws.current_connection = websocket
@@ -86,6 +92,9 @@ class Table:
                 details = inspect.signature(handle)
                 argument_count = len(details.parameters)
                 event = event_type.from_raw(message)
+
+                if isinstance(event, Switch):
+                    return self.handle_switch(event)
 
                 if argument_count == 0:  #: Function has no arguments, therefore useless
                     self.handles.pop(type(event))

@@ -46,9 +46,14 @@ class Sit(HandlerBase):
         self.seat = seat
 
 
+def print_event(event: Event):
+    logger.info(f"Received event: {event}")
+
+
 def main():
     custom_state = Sit()
 
+    table.handle_all(print_event)
     table.register(custom_state)
     table.connect()
 
