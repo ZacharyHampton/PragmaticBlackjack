@@ -169,7 +169,7 @@ class DecisionInc(Event):
     time: int | None
     can_double: bool
     pre_auto_stand: bool
-    user_id: str
+    user_id: str | None
     hand: int
 
     @classmethod
@@ -186,7 +186,7 @@ class DecisionInc(Event):
             time=int(data.get("@time")) if "@time" in data else None,
             can_double=data.get("@candouble") and data["@candouble"] == "true",
             pre_auto_stand=data.get("@preautostand") and data["@preautostand"] == "true",
-            user_id=data["@userid"],
+            user_id=data.get("@userid"),
             hand=int(data["@hand"]),
         )
 
