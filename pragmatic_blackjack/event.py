@@ -974,6 +974,19 @@ class CardMove(Event):
             game=int(data["@game"]),
         )
 
+
+class OfferTimer(Event):
+    id: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "OfferTimer":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            id=str(data["@id"])
+        )
+
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -1019,6 +1032,7 @@ _mapping = {
     "screenName": ScreenName,
     "switch": Switch,
     "cardmove": CardMove,
+    "offertimer": OfferTimer
 }
 #: TODO: switch (triggered by wrong number in uri), session
 
