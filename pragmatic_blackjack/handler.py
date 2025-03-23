@@ -47,7 +47,8 @@ class HandlerBase:
         ScreenName: "handle_screen_name",
         Switch: "handle_switch",
         CardMove: "handle_card_move",
-        OfferTimer: "handle_offer_timer"
+        OfferTimer: "handle_offer_timer",
+        Sitdown: "handle_sit_down",
     }
 
     def __init__(self, *args, **kwargs):
@@ -98,6 +99,8 @@ class HandlerBase:
     def handle_switch(self, event: Switch, raw: str = None): ...
     def handle_card_move(self, event: CardMove, raw: str = None): ...
     def handle_offer_timer(self, event: OfferTimer, raw: str = None): ...
+    def handle_sit_down(self, event: Sitdown, raw: str = None): ...
+
 
 
 

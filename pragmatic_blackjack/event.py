@@ -987,6 +987,22 @@ class OfferTimer(Event):
         )
 
 
+#: '<sitdown seatNum="5" tableid="sobj272blackjack" seq="66">1031</sitdown>'
+class Sitdown(Event):
+    seat_num: int
+    table_id: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "Sitdown":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            seat_num=int(data["@seatNum"]),
+            table_id=str(data["@tableid"])
+        )
+
+
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -1032,7 +1048,8 @@ _mapping = {
     "screenName": ScreenName,
     "switch": Switch,
     "cardmove": CardMove,
-    "offertimer": OfferTimer
+    "offertimer": OfferTimer,
+    "sitdown": Sitdown
 }
 #: TODO: switch (triggered by wrong number in uri), session
 
