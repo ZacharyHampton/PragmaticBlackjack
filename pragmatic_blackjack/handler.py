@@ -43,6 +43,7 @@ class HandlerBase:
         Logout: "handle_logout",
         BetStats: "handle_bet_stats",
         Command: "handle_command",
+        DealNow: "handle_deal_now",
     }
 
     def __init__(self, *args, **kwargs):
@@ -88,6 +89,7 @@ class HandlerBase:
     def handle_logout(self, event: Logout, raw: str = None): ...
     def handle_bet_stats(self, event: BetStats, raw: str = None): ...
     def handle_command(self, event: Command, raw: str = None): ...
+    def handle_deal_now(self, event: DealNow, raw: str = None): ...
 
 
 

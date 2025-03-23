@@ -886,6 +886,28 @@ class Command(Event):
         )
 
 
+class DealNow(Event):
+    """
+    DealNow event
+
+    XML Example: '<dealNow gameId="7871804714" tableId="cy8me4k2b1en4r09" userId="ppc1735100372857" seq="98"></dealNow>'
+    """
+
+    game_id: int
+    table_id: str
+    user_id: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "DealNow":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            game_id=int(data["@gameId"]),
+            table_id=data["@tableId"],
+            user_id=data["@userId"],
+        )
+
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -927,8 +949,9 @@ _mapping = {
     "logout": Logout,
     "betStats": BetStats,
     "command": Command,
+    "dealNow": DealNow,
 }
-#: TODO: switch, dealNow
+#: TODO: switch (triggered by wrong number in uri), session
 
 
 def _get_event_name(message: str) -> str:
