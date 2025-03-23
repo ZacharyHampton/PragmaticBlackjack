@@ -30,9 +30,6 @@ class Table:
 
     def _process_base_class_handles(self, handler_class: HandlerBase):
         for handle in handler_class.__mapping__:
-            if handle in self.handles:
-                continue
-
             self.register_handle(handle, getattr(handler_class, handler_class.__mapping__[handle]))
 
     def register(self, handler: HandlerBase) -> None:

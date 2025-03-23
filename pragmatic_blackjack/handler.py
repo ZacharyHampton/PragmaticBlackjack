@@ -46,6 +46,7 @@ class HandlerBase:
         DealNow: "handle_deal_now",
         ScreenName: "handle_screen_name",
         Switch: "handle_switch",
+        CardMove: "handle_card_move",
     }
 
     def __init__(self, *args, **kwargs):
@@ -94,6 +95,7 @@ class HandlerBase:
     def handle_deal_now(self, event: DealNow, raw: str = None): ...
     def handle_screen_name(self, event: ScreenName, raw: str = None): ...
     def handle_switch(self, event: Switch, raw: str = None): ...
+    def handle_card_move(self, event: CardMove, raw: str = None): ...
 
 
 

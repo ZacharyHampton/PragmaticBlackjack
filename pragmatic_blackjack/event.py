@@ -952,6 +952,28 @@ class Switch(Event):
             ws_address=data["@wsAddress"],
         )
 
+
+class CardMove(Event):
+    """
+    CardMove event
+
+    XML Example: '<cardmove seat="6" score="7" game="7873476914" seq="188"></cardmove>'
+    """
+
+    seat: int
+    score: int
+    game: int
+
+    @classmethod
+    def from_raw(cls, data: str) -> "CardMove":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            seat=int(data["@seat"]),
+            score=int(data["@score"]),
+            game=int(data["@game"]),
+        )
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -996,6 +1018,7 @@ _mapping = {
     "dealNow": DealNow,
     "screenName": ScreenName,
     "switch": Switch,
+    "cardmove": CardMove,
 }
 #: TODO: switch (triggered by wrong number in uri), session
 
