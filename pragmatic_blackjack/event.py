@@ -908,7 +908,6 @@ class DealNow(Event):
             user_id=data["@userId"],
         )
 
-
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -939,7 +938,7 @@ _mapping = {
     "notinsured": NotInsured,
     "mainBetCount": MainBetCount,
     "cardinc": CardInc,
-    "currentshoe": CurrentShoe,
+    "currentShoe": CurrentShoe,
     "insured_bb": InsuredBb,
     "insured": Insured,
     "offerover": OfferOver,
