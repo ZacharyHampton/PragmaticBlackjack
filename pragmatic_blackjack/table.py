@@ -56,11 +56,11 @@ class Table:
         else:
             self.handles[event] = [function]
 
-    def handle_switch(self, event: Switch):
+    async def handle_switch(self, event: Switch):
         self.disconnect()
 
-        self._ws = Websocket(self.table_id, self.session_id, event.game_server)
-        return self.connect()
+        self._ws.game_server = event.game_server
+        return await self._websocket_handler()
 
     async def _websocket_handler(self):
         async for websocket in self._ws.get_connection():
@@ -91,7 +91,7 @@ class Table:
                 event = event_type.from_raw(message)
 
                 if isinstance(event, Switch):
-                    return self.handle_switch(event)
+                    return await self.handle_switch(event)
 
                 if argument_count == 0:  #: Function has no arguments, therefore useless
                     self.handles.pop(type(event))
