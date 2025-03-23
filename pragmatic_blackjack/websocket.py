@@ -42,3 +42,7 @@ class Websocket:
 
     def send_raw_message(self, message: str):
         asyncio.create_task(self.current_connection.send(message))
+
+    def disconnect(self):
+        if self.current_connection:
+            asyncio.create_task(self.current_connection.close())

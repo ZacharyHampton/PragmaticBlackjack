@@ -1,10 +1,10 @@
 from dataclasses import dataclass
+from pydantic import BaseModel
 import xmltodict
 import re
 
 
-@dataclass
-class Event:
+class Event(BaseModel):
     @staticmethod
     def _xml_to_json(data: str, non_root: bool = True) -> dict:
         return list(xmltodict.parse(data).values())[0] if non_root else xmltodict.parse(data)
@@ -13,7 +13,6 @@ class Event:
     def from_raw(cls, data: str) -> "Event": ...
 
 
-@dataclass
 class TableEvent(Event):
     """
     Creates a new table or opens an existing table
@@ -34,7 +33,6 @@ class TableEvent(Event):
         )
 
 
-@dataclass
 class Seat(Event):
     """
     Seat event
@@ -79,7 +77,6 @@ class Seat(Event):
         )
 
 
-@dataclass
 class Pong(Event):
     """
     Pong event
@@ -97,7 +94,6 @@ class Pong(Event):
         )
 
 
-@dataclass
 class Card(Event):
     """
     Dealt to player's seat number with score value -- seat="-1" for dealer
@@ -128,7 +124,6 @@ class Card(Event):
         )
 
 
-@dataclass
 class PreDecision(Event):
     """
     Event asks each player before initial player's turn
@@ -157,7 +152,6 @@ class PreDecision(Event):
         )
 
 
-@dataclass
 class DecisionInc(Event):
     """
     Event asked directly to player during their turn validating split/double
@@ -196,7 +190,6 @@ class DecisionInc(Event):
         )
 
 
-@dataclass
 class PreDecisionInc(Event):
     """
     Event before start of initial player's turn validating split/double for each player
@@ -225,7 +218,6 @@ class PreDecisionInc(Event):
         )
 
 
-@dataclass
 class Decision(Event):
     """
     Event directed at current player's turn
@@ -254,7 +246,6 @@ class Decision(Event):
         )
 
 
-@dataclass
 class VoipCC(Event):
     """
     Dealer red card from shoe
@@ -273,7 +264,6 @@ class VoipCC(Event):
         )
 
 
-@dataclass
 class Dealer(Event):
     """
     Event called after dealer scans ID card
@@ -294,7 +284,6 @@ class Dealer(Event):
         )
 
 
-@dataclass
 class Game(Event):
     """
     Game event
@@ -315,7 +304,6 @@ class Game(Event):
         )
 
 
-@dataclass
 class StartGame(Event):
     """
     Event to start new game
@@ -340,7 +328,6 @@ class StartGame(Event):
         )
 
 
-@dataclass
 class BetsOpen(Event):
     """
     Event opens bets for 12 seconds
@@ -361,7 +348,6 @@ class BetsOpen(Event):
         )
 
 
-@dataclass
 class BetsClosingSoon(Event):
     """
     Event runs approximately 6 seconds after BetsOpen event
@@ -382,7 +368,6 @@ class BetsClosingSoon(Event):
         )
 
 
-@dataclass
 class BetsClosed(Event):
     """
     Timer to bet ended; no longer accepting bets
@@ -403,7 +388,6 @@ class BetsClosed(Event):
         )
 
 
-@dataclass
 class PreBet(Event):
     """
     Initial bet placed by player
@@ -423,7 +407,6 @@ class PreBet(Event):
         )
 
 
-@dataclass
 class Score(Event):
     """
     Score event
@@ -447,7 +430,6 @@ class Score(Event):
         )
 
 
-@dataclass
 class Bet(Event):
     """
     Bet event -- Includes amount of bet placed by player
@@ -473,7 +455,6 @@ class Bet(Event):
         )
 
 
-@dataclass
 class Bj21Plus3(Event):
     """
     Event plays for 21+3 side bet -- Outcome either Win or Lose
@@ -497,7 +478,6 @@ class Bj21Plus3(Event):
         )
 
 
-@dataclass
 class PerfectPairs(Event):
     """
     Event plays for perfect pair side bet -- Outcome either Win or Lose
@@ -521,7 +501,6 @@ class PerfectPairs(Event):
         )
 
 
-@dataclass
 class BetResult(Event):
     """
     Event signifies round outcome for player -- Results can be: Win, Lose, Push, Blackjack, Bust
@@ -543,7 +522,6 @@ class BetResult(Event):
         )
 
 
-@dataclass
 class HandResult(Event):
     """
     result integer corresponds with outcome: 2=Blackjack, 3=Win, 4=Lose, 5=Push, 6=Bust
@@ -567,7 +545,6 @@ class HandResult(Event):
         )
 
 
-@dataclass
 class Wins(Event):
     """
     Amount of wins each player has accumulated for each round they win in a row (appears as a medal next to username)
@@ -589,7 +566,6 @@ class Wins(Event):
         )
 
 
-@dataclass
 class BjGameEnd(Event):
     """
     Event signifies end of current round
@@ -607,7 +583,6 @@ class BjGameEnd(Event):
         )
 
 
-@dataclass
 class StartGameError(Event):
     """
     StartGameError event
@@ -629,7 +604,6 @@ class StartGameError(Event):
         )
 
 
-@dataclass
 class StartDealing(Event):
     """
     Dealer will start dealing cards to table
@@ -649,7 +623,6 @@ class StartDealing(Event):
         )
 
 
-@dataclass
 class Timer(Event):
     """
     Timer event
@@ -671,7 +644,6 @@ class Timer(Event):
         )
 
 
-@dataclass
 class NotInsured(Event):
     """
     Checks if player is insured
@@ -693,7 +665,6 @@ class NotInsured(Event):
         )
 
 
-@dataclass
 class MainBetCount(Event):
     """
     MainBetCount event
@@ -713,7 +684,6 @@ class MainBetCount(Event):
         )
 
 
-@dataclass
 class CardInc(Event):
     """
     CardInc event
@@ -739,7 +709,6 @@ class CardInc(Event):
         )
 
 
-@dataclass
 class CurrentShoe(Event):
     """
     Event signifies shoe change after current round ends
@@ -761,7 +730,6 @@ class CurrentShoe(Event):
         )
 
 
-@dataclass
 class InsuredBb(Event):
     """
     InsuredBb event
@@ -781,7 +749,6 @@ class InsuredBb(Event):
         )
 
 
-@dataclass
 class Insured(Event):
     """
     Event for insurance
@@ -805,7 +772,6 @@ class Insured(Event):
         )
 
 
-@dataclass
 class OfferOver(Event):
     """
     Event signifies insurance offer ends
@@ -823,7 +789,6 @@ class OfferOver(Event):
         )
 
 
-@dataclass
 class Subscribe(Event):
     """
     Subscribe event
@@ -845,7 +810,6 @@ class Subscribe(Event):
         )
 
 
-@dataclass
 class DuplicatedConnection(Event):
     """
     DuplicatedConnection event
@@ -858,7 +822,6 @@ class DuplicatedConnection(Event):
         return cls()
 
 
-@dataclass
 class CloseConnection(Event):
     """
     CloseConnection event
@@ -871,7 +834,6 @@ class CloseConnection(Event):
         return cls()
 
 
-@dataclass
 class Logout(Event):
     """
     Logout event
@@ -892,7 +854,6 @@ class Logout(Event):
         )
 
 
-@dataclass
 class BetStats(Event):
     """
     BetStats event
@@ -905,7 +866,6 @@ class BetStats(Event):
         return cls()
 
 
-@dataclass
 class Command(Event):
     """
     Command event
