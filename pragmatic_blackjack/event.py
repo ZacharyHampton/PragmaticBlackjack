@@ -49,7 +49,7 @@ class Seat(Event):
     event: str
     table_id: str
     enrollment_date: str | None
-    currency_code: str
+    currency_code: str | None
     sidebets: bool
     seats_taken: int | None = None
     idle: bool | None = None

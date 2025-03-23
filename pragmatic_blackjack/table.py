@@ -95,7 +95,7 @@ class Table:
                     handle(event, message)
 
     def connect(self):
-        self._event_loop.run_until_complete(self._websocket_handler())
+        asyncio.run(self._websocket_handler())
 
     def disconnect(self):
         self._ws.disconnect()
