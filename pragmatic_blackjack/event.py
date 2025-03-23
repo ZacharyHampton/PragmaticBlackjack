@@ -968,6 +968,7 @@ _mapping = {
     "betStats": BetStats,
     "command": Command,
 }
+#: TODO: switch, dealNow
 
 
 def _get_event_name(message: str) -> str:

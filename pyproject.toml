@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pragmatic-blackjack"
-version = "2.0.1"
+version = "2.0.2"
 description = "Play on Pragmatic Play Blackjack tables through Python."
 authors = ["Zachary Hampton <zachary@bunsly.com>"]
 readme = "README.md"
@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 xmltodict = "^0.13.0"
 websockets = "^12.0"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
