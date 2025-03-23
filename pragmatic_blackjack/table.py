@@ -52,7 +52,7 @@ class Table:
         """
 
         if self.handles.get(event):
-            self.handles[event].append(event)
+            self.handles[event].append(function)
         else:
             self.handles[event] = [function]
 
