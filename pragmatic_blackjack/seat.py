@@ -71,3 +71,18 @@ class Seat:
             "<command  channel='table-{}'><lpbet  gameMode='blackjack_desktop' gameId='{}' userId='{}' ck='{}'>"
             "<bet  seat='{}' amount='{}' betbehind='false' perfectpair='false' bj21plus3='false' mainbet='true' ck='{}'/></lpbet >".format(self.table_id, game_id, self.user_id, self.ck, self.seat_number, bet_amount, self.ck)
         )
+
+    def hit(self, game_id: int):
+        self._ws.send_raw_message(
+            "<command channel='table-{}' > <decision gameMode='blackjack_desktop' gameId='{}' userId='{}' ck='{}' seatNum='{}' hand='0' dec='hit'></decision> </command>".format(self.table_id, game_id, self.user_id, self.ck, self.seat_number)
+        )
+
+    def stand(self, game_id: int):
+        self._ws.send_raw_message(
+            "<command channel='table-{}' > <decision gameMode='blackjack_desktop' gameId='{}' userId='{}' ck='{}' seatNum='{}' hand='0' dec='stand'></decision> </command>".format(self.table_id, game_id, self.user_id, self.ck, self.seat_number)
+        )
+
+    def double(self, game_id: int):
+        self._ws.send_raw_message(
+            "<command channel='table-{}' > <decision gameMode='blackjack_desktop' gameId='{}' userId='{}' ck='{}' seatNum='{}' hand='0' dec='double'></decision> </command>".format(self.table_id, game_id, self.user_id, self.ck, self.seat_number)
+        )
