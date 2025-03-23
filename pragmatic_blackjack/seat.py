@@ -10,7 +10,7 @@ class Seat:
             table_id: str,
             seat_number: int,
             session_id: str,
-            user_id: str,
+            user_id: str = None
     ):
         self._ws = websocket
         self.table_id = table_id
@@ -56,7 +56,7 @@ class Seat:
         }
 
         response = requests.get(
-            'https://gs4.pragmaticplaylive.net/api/ui/blackjack/unseat',
+            'https://gs14.pragmaticplaylive.net/api/ui/blackjack/unseat',
             headers=headers,
             params=params
         )

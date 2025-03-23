@@ -24,7 +24,7 @@ class Websocket:
 
     @property
     def uri(self):
-        return "wss://gs4.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}".format(
+        return "wss://gs14.pragmaticplaylive.net/game?JSESSIONID={}&tableId={}".format(
             self._session_id, self._table_id
         ) + ("&reconnect=true" if self.has_previously_disconnected else "")
 
