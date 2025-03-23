@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pydantic import BaseModel
 import xmltodict
+from .exceptions import PragmaticSessionInvalid
 import re
 
 
@@ -955,6 +956,9 @@ _mapping = {
 
 
 def _get_event_name(message: str) -> str:
+    if message == "<session>offline</session>":
+        raise PragmaticSessionInvalid("Session is invalid.")
+
     if event_name := re.findall(r"<(.*?) ", message):
         return event_name[0]
     else:
