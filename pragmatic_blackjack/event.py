@@ -183,7 +183,7 @@ class DecisionInc(Event):
             dealer_score=data.get("@dealerscore"),
             id=data["@id"],
             time=int(data.get("@time")) if "@time" in data else None,
-            can_double=data["@candouble"] == "true",
+            can_double=data.get("@candouble") and data["@candouble"] == "true",
             pre_auto_stand=data["@preautostand"] == "true",
             user_id=data["@userid"],
             hand=int(data["@hand"]),
