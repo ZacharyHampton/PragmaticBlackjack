@@ -908,6 +908,26 @@ class DealNow(Event):
             user_id=data["@userId"],
         )
 
+
+class ScreenName(Event):
+    """
+    XML Example: '<screenName name="Kristal" tableId="cy8me4k2b1en4r09" userId="ppc1735114652230" seq="86"></screenName>'
+    """
+
+    name: str
+    table_id: str
+    user_id: str
+
+    @classmethod
+    def from_raw(cls, data: str) -> "ScreenName":
+        data = cls._xml_to_json(data)
+
+        return cls(
+            name=data["@name"],
+            table_id=data["@tableId"],
+            user_id=data["@userId"],
+        )
+
 _mapping = {
     "seat": Seat,
     "pong": Pong,
@@ -950,6 +970,7 @@ _mapping = {
     "betStats": BetStats,
     "command": Command,
     "dealNow": DealNow,
+    "screenName": ScreenName,
 }
 #: TODO: switch (triggered by wrong number in uri), session
 
